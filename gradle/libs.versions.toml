@@ -16,7 +16,7 @@ exoplayer = "1.5.0"
 accompanist = "0.36.0"
 coil = "2.7.0"
 kotlinxCoroutines = "1.9.0"
-miuix = "0.8.5"
+miuix = "0.8.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

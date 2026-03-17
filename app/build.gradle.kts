@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.flux.recorder"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.flux.recorder"
