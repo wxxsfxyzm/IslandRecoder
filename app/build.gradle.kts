@@ -98,8 +98,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-    // kotlin-metadata-jvm for Kotlin 2.3.x compatibility (unshaded since Hilt 2.57)
-    implementation("org.jetbrains.kotlinx:kotlin-metadata-jvm:0.9.0")
     
     // Navigation
     implementation(libs.androidx.navigation.compose)
