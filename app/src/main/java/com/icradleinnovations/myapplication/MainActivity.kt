@@ -10,7 +10,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,10 +24,10 @@ import com.flux.recorder.ui.screens.HomeScreen
 import com.flux.recorder.ui.screens.RecordingsScreen
 import com.flux.recorder.ui.screens.SettingsScreen
 import com.flux.recorder.ui.theme.FluxRecorderTheme
-import com.flux.recorder.ui.theme.VoidBlack
 import com.flux.recorder.utils.FileManager
 import com.flux.recorder.utils.PreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
+import top.yukonga.miuix.kmp.basic.Surface
 import java.io.File
 import javax.inject.Inject
 
@@ -95,8 +94,7 @@ class MainActivity : ComponentActivity() {
             
             FluxRecorderTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = VoidBlack
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     // Collect recording state reactively
                     val recordingState by service?.recordingState?.collectAsState() 

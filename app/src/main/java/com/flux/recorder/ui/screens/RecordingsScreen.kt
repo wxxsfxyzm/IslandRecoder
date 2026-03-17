@@ -3,11 +3,6 @@ package com.flux.recorder.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,10 +10,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.flux.recorder.R
-import com.flux.recorder.ui.theme.*
+import com.flux.recorder.ui.theme.RecordingRed
+import top.yukonga.miuix.kmp.basic.*
+import top.yukonga.miuix.kmp.icon.MiuixIcons
+import top.yukonga.miuix.kmp.icon.extended.Back
+import top.yukonga.miuix.kmp.icon.extended.Delete
+import top.yukonga.miuix.kmp.icon.extended.Share
+import top.yukonga.miuix.kmp.theme.MiuixTheme
 import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordingsScreen(
     recordings: List<File>,
@@ -27,28 +27,21 @@ fun RecordingsScreen(
     onShareRecording: (File) -> Unit,
     onPlayRecording: (File) -> Unit
 ) {
+    val scrollBehavior = MiuixScrollBehavior()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        stringResource(R.string.recordings),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
+                title = stringResource(R.string.recordings),
+                largeTitle = stringResource(R.string.recordings),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_back))
+                        Icon(MiuixIcons.Back, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = VoidBlack,
-                    titleContentColor = TextPrimary
-                )
+                scrollBehavior = scrollBehavior
             )
-        },
-        containerColor = VoidBlack
+        }
     ) { padding ->
         if (recordings.isEmpty()) {
             Box(
@@ -59,16 +52,16 @@ fun RecordingsScreen(
             ) {
                 Text(
                     stringResource(R.string.no_recordings),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextSecondary
+                    style = MiuixTheme.textStyles.body1,
+                    color = MiuixTheme.colorScheme.onBackgroundVariant
                 )
             }
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp),
+                    .padding(padding),
+                contentPadding = PaddingValues(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(recordings) { recording ->
@@ -93,26 +86,21 @@ fun RecordingCard(
 ) {
     Card(
         onClick = onPlay,
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = SurfaceBlack
-        )
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 file.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = TextPrimary,
+                style = MiuixTheme.textStyles.headline1,
                 fontWeight = FontWeight.SemiBold
             )
-            Spacer(modifier = Modifier.height(8.dp))
-
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 stringResource(R.string.file_size_label, formatFileSize(file.length())),
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
+                style = MiuixTheme.textStyles.body2,
+                color = MiuixTheme.colorScheme.onBackgroundVariant
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -121,26 +109,21 @@ fun RecordingCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                OutlinedButton(
+                Button(
                     onClick = onShare,
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = FluxCyan
-                    )
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Share, null, modifier = Modifier.size(18.dp))
+                    Icon(MiuixIcons.Share, null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(stringResource(R.string.share_recording))
                 }
 
-                OutlinedButton(
+                Button(
                     onClick = onDelete,
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = RecordingRed
-                    )
+                    colors = ButtonDefaults.buttonColors(color = RecordingRed)
                 ) {
-                    Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp))
+                    Icon(MiuixIcons.Delete, null, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(stringResource(R.string.delete_recording))
                 }
