@@ -43,6 +43,7 @@
 
     <!-- Quality Options -->
     <string name="quality_native">Native</string>
+    <string name="quality_fhd">1080p</string>
     <string name="quality_high">720p</string>
     <string name="quality_medium">480p</string>
     <string name="quality_low">360p</string>

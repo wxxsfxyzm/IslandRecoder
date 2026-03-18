@@ -10,6 +10,7 @@ import kotlinx.parcelize.Parcelize
  */
 enum class VideoQuality(val targetShortSide: Int, @StringRes val tierLabelResId: Int) {
     NATIVE(0, R.string.quality_native),
+    FHD(1080, R.string.quality_fhd),
     HIGH(720, R.string.quality_high),
     MEDIUM(480, R.string.quality_medium),
     LOW(360, R.string.quality_low);
@@ -60,7 +61,7 @@ enum class AudioSource(@StringRes val labelResId: Int) {
  */
 @Parcelize
 data class RecordingSettings(
-    val videoQuality: VideoQuality = VideoQuality.HIGH,
+    val videoQuality: VideoQuality = VideoQuality.FHD,
     val frameRate: FrameRate = FrameRate.FPS_30,
     val audioSource: AudioSource = AudioSource.BOTH,
     val enableFacecam: Boolean = false,

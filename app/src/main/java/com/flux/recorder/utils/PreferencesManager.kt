@@ -34,11 +34,11 @@ class PreferencesManager(context: Context) {
         return RecordingSettings(
             videoQuality = try {
                 VideoQuality.valueOf(
-                    prefs.getString(KEY_VIDEO_QUALITY, VideoQuality.HIGH.name)
-                        ?: VideoQuality.HIGH.name
+                    prefs.getString(KEY_VIDEO_QUALITY, VideoQuality.FHD.name)
+                        ?: VideoQuality.FHD.name
                 )
             } catch (_: IllegalArgumentException) {
-                VideoQuality.HIGH // fallback for old enum values
+                VideoQuality.FHD // fallback for old enum values
             },
             frameRate = FrameRate.valueOf(
                 prefs.getString(KEY_FRAME_RATE, FrameRate.FPS_60.name) 
