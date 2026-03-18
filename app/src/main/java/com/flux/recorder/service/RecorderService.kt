@@ -46,23 +46,23 @@ class RecorderService : Service() {
     private var audioJob: Job? = null
     private var shakeDetector: ShakeDetector? = null
     
-    private val _recordingState = MutableStateFlow<RecordingState>(RecordingState.Idle)
-    val recordingState: StateFlow<RecordingState> = _recordingState.asStateFlow()
-    
     private var startTime: Long = 0
     private var pausedDuration: Long = 0
     private var pauseStartTime: Long = 0
-    
+
     companion object {
         private const val TAG = "RecorderService"
         const val ACTION_START_RECORDING = "com.flux.recorder.START_RECORDING"
         const val ACTION_STOP_RECORDING = "com.flux.recorder.STOP_RECORDING"
         const val ACTION_PAUSE_RECORDING = "com.flux.recorder.PAUSE_RECORDING"
         const val ACTION_RESUME_RECORDING = "com.flux.recorder.RESUME_RECORDING"
-        
+
         const val EXTRA_RESULT_CODE = "result_code"
         const val EXTRA_RESULT_DATA = "result_data"
         const val EXTRA_SETTINGS = "settings"
+
+        private val _recordingState = MutableStateFlow<RecordingState>(RecordingState.Idle)
+        val recordingState: StateFlow<RecordingState> = _recordingState.asStateFlow()
     }
     
     override fun onCreate() {

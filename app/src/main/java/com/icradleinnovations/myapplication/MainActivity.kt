@@ -1,18 +1,13 @@
 package com.flux.recorder
 
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation3.runtime.NavEntry
@@ -35,73 +30,31 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    
+
     @Inject
     lateinit var preferencesManager: PreferencesManager
-    
+
     @Inject
     lateinit var fileManager: FileManager
-    
-    private var recorderService: RecorderService? = null
-    private var serviceBound = false
-    
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as RecorderService.RecorderBinder
-            recorderService = binder.getService()
-            serviceBound = true
-        }
-        
-        override fun onServiceDisconnected(name: ComponentName?) {
-            recorderService = null
-            serviceBound = false
-        }
-    }
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         // Check if launched from Quick Settings Tile
         val shouldStartRecording = intent?.action == QuickTileService.ACTION_TOGGLE_RECORDING
-        
+
         setContent {
-            // Make recorderService observable
-            var service by remember { mutableStateOf<RecorderService?>(null) }
             var autoStartRecording by remember { mutableStateOf(shouldStartRecording) }
-            val context = LocalContext.current
-            
-            // Update service when connection changes
-            DisposableEffect(Unit) {
-                val connection = object : ServiceConnection {
-                    override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-                        val serviceBinder = binder as RecorderService.RecorderBinder
-                        service = serviceBinder.getService()
-                    }
-                    
-                    override fun onServiceDisconnected(name: ComponentName?) {
-                        service = null
-                    }
-                }
-                
-                // Bind to service
-                val intent = Intent(context, RecorderService::class.java)
-                context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-                
-                onDispose {
-                    context.unbindService(connection)
-                }
-            }
-            
+
             FluxRecorderTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Collect recording state reactively
-                    val recordingState by service?.recordingState?.collectAsState() 
-                        ?: remember { mutableStateOf(RecordingState.Idle) }
-                    
+                    // Collect recording state directly from companion object — no binding needed
+                    val recordingState by RecorderService.recordingState.collectAsState()
+
                     FluxRecorderApp(
                         preferencesManager = preferencesManager,
                         fileManager = fileManager,
@@ -201,10 +154,6 @@ class MainActivity : ComponentActivity() {
             action = RecorderService.ACTION_RESUME_RECORDING
         }
         startService(intent)
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }
 
