@@ -50,9 +50,6 @@ fun HomeScreen(
 
     val requiredPermissions = buildList {
         add(android.Manifest.permission.RECORD_AUDIO)
-        if (settings.enableFacecam) {
-            add(android.Manifest.permission.CAMERA)
-        }
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             add(android.Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -320,19 +317,21 @@ fun SettingsSummaryCard(settings: RecordingSettings) {
                 summary = qualityLabel
             )
             BasicComponent(
-                title = stringResource(R.string.label_frame_rate),
-                summary = stringResource(settings.frameRate.labelResId)
+                title = stringResource(R.string.label_bitrate),
+                summary = stringResource(settings.videoBitrate.labelResId)
+            )
+            BasicComponent(
+                title = stringResource(R.string.label_orientation),
+                summary = stringResource(settings.screenOrientation.labelResId)
             )
             BasicComponent(
                 title = stringResource(R.string.label_audio),
                 summary = stringResource(settings.audioSource.labelResId)
             )
-            if (settings.enableFacecam) {
-                BasicComponent(
-                    title = stringResource(R.string.label_facecam),
-                    summary = stringResource(R.string.label_enabled)
-                )
-            }
+            BasicComponent(
+                title = stringResource(R.string.label_frame_rate),
+                summary = stringResource(settings.frameRate.labelResId)
+            )
         }
     }
 }

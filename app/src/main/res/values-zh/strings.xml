@@ -20,11 +20,11 @@
     <string name="action_record">录制</string>
     <string name="action_stop_caps">停止</string>
     <string name="current_settings">当前设置</string>
-    <string name="label_quality">画质</string>
+    <string name="label_quality">分辨率</string>
+    <string name="label_bitrate">画质</string>
+    <string name="label_orientation">方向</string>
     <string name="label_frame_rate">帧率</string>
     <string name="label_audio">音频</string>
-    <string name="label_facecam">前置摄像头</string>
-    <string name="label_enabled">已开启</string>
 
     <!-- Content Descriptions -->
     <string name="cd_recordings">录制列表</string>
@@ -33,14 +33,17 @@
 
     <!-- Settings -->
     <string name="settings">设置</string>
-    <string name="video_quality">视频画质</string>
-    <string name="frame_rate">帧率</string>
-    <string name="audio_source">音频来源</string>
-    <string name="section_camera">摄像头</string>
-    <string name="enable_facecam">启用前置摄像头</string>
-    <string name="section_gestures">手势</string>
-    <string name="shake_to_stop">摇晃停止录制</string>
-    <string name="shake_sensitivity">摇晃灵敏度</string>
+    <string name="section_recording">屏幕录制</string>
+    <string name="video_quality">分辨率</string>
+    <string name="video_quality_summary">视频的宽、高像素数，越高视频越清晰</string>
+    <string name="video_bitrate">视频画质</string>
+    <string name="video_bitrate_summary">越高画质越好，生成的文件也会越大</string>
+    <string name="screen_orientation">屏幕方向</string>
+    <string name="screen_orientation_summary">生成的视频方向</string>
+    <string name="audio_source">声音来源</string>
+    <string name="audio_source_summary">是否录制系统内部声音或麦克风声音</string>
+    <string name="frame_rate">帧数</string>
+    <string name="frame_rate_summary">每秒钟录制的帧数，越高画越流畅</string>
 
     <!-- Quality Options -->
     <string name="quality_native">原生</string>
@@ -50,16 +53,36 @@
     <string name="quality_low">360p</string>
     <string name="quality_label_format">%1$s (%2$d×%3$d)</string>
 
+    <!-- Bitrate Options -->
+    <string name="bitrate_auto">自动</string>
+    <string name="bitrate_1m">1 Mbps</string>
+    <string name="bitrate_4m">4 Mbps</string>
+    <string name="bitrate_6m">6 Mbps</string>
+    <string name="bitrate_8m">8 Mbps</string>
+    <string name="bitrate_16m">16 Mbps</string>
+    <string name="bitrate_24m">24 Mbps</string>
+    <string name="bitrate_32m">32 Mbps</string>
+    <string name="bitrate_50m">50 Mbps</string>
+    <string name="bitrate_100m">100 Mbps</string>
+
+    <!-- Orientation Options -->
+    <string name="orientation_auto">自动</string>
+    <string name="orientation_portrait">竖屏</string>
+    <string name="orientation_landscape">横屏</string>
+
     <!-- Frame Rate Options -->
+    <string name="fps_15">15 帧</string>
+    <string name="fps_24">24 帧</string>
     <string name="fps_30">30 帧</string>
+    <string name="fps_48">48 帧</string>
     <string name="fps_60">60 帧</string>
     <string name="fps_90">90 帧</string>
 
     <!-- Audio Options -->
-    <string name="audio_none">无音频</string>
-    <string name="audio_internal">内部音频</string>
-    <string name="audio_microphone">麦克风</string>
-    <string name="audio_both">全部</string>
+    <string name="audio_none">无声音</string>
+    <string name="audio_internal">系统内声音</string>
+    <string name="audio_microphone">麦克风声音</string>
+    <string name="audio_both">系统内+麦克风声音</string>
 
     <!-- Recordings -->
     <string name="recordings">录制列表</string>
@@ -77,7 +100,6 @@
     <!-- Permissions -->
     <string name="permission_required">需要权限</string>
     <string name="permission_audio">需要麦克风权限以录制音频</string>
-    <string name="permission_camera">需要相机权限以使用前置摄像头</string>
     <string name="permission_overlay">需要悬浮窗权限以使用浮动控件</string>
     <string name="permission_storage">需要存储权限以保存录制内容</string>
     <string name="grant_permission">授予权限</string>

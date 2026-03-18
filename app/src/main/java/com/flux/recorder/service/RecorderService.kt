@@ -14,9 +14,9 @@ import com.flux.recorder.core.projection.ScreenCaptureManager
 import com.flux.recorder.data.AudioSource
 import com.flux.recorder.data.RecordingSettings
 import com.flux.recorder.data.RecordingState
+import com.flux.recorder.data.ScreenOrientation
 import com.flux.recorder.utils.FileManager
 import com.flux.recorder.utils.NotificationHelper
-import com.flux.recorder.utils.ShakeDetector
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +44,6 @@ class RecorderService : Service() {
     private var outputFile: File? = null
     private var recordingJob: Job? = null
     private var audioJob: Job? = null
-    private var shakeDetector: ShakeDetector? = null
     
     private var startTime: Long = 0
     private var pausedDuration: Long = 0
@@ -143,7 +142,14 @@ class RecorderService : Service() {
 
                 // Calculate dimensions based on device screen and quality tier
                 val (screenWidth, screenHeight) = screenCaptureManager.getScreenDimensions()
-                val (width, height) = settings.videoQuality.computeDimensions(screenWidth, screenHeight)
+                val (rawW, rawH) = settings.videoQuality.computeDimensions(screenWidth, screenHeight)
+
+                // Apply orientation override
+                val (width, height) = when (settings.screenOrientation) {
+                    ScreenOrientation.AUTO -> Pair(rawW, rawH)
+                    ScreenOrientation.PORTRAIT -> if (rawW < rawH) Pair(rawW, rawH) else Pair(rawH, rawW)
+                    ScreenOrientation.LANDSCAPE -> if (rawW > rawH) Pair(rawW, rawH) else Pair(rawH, rawW)
+                }
 
                 // Initialize encoder
                 val bitrate = settings.calculateBitrate(width, height)
@@ -229,29 +235,6 @@ class RecorderService : Service() {
                 }
 
                 Log.d(TAG, "Recording started")
-
-                // Start facecam if enabled
-                if (settings.enableFacecam) {
-                    withContext(Dispatchers.Main) {
-                        val facecamIntent = Intent(this@RecorderService, FloatingControlService::class.java)
-                        startService(facecamIntent)
-                    }
-                }
-
-                // Start shake detector if enabled
-                if (settings.enableShakeToStop) {
-                    withContext(Dispatchers.Main) {
-                        shakeDetector = ShakeDetector(
-                            context = this@RecorderService,
-                            sensitivity = settings.shakeSensitivity
-                        ) {
-                            Log.d(TAG, "Shake detected - stopping recording")
-                            stopRecording()
-                        }
-                        shakeDetector?.start()
-                        Log.d(TAG, "Shake-to-stop enabled with sensitivity: ${settings.shakeSensitivity}")
-                    }
-                }
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error starting recording", e)
@@ -416,14 +399,6 @@ class RecorderService : Service() {
 
         audioJob?.cancel()
         audioJob = null
-
-        // Stop shake detector
-        shakeDetector?.stop()
-        shakeDetector = null
-
-        // Stop facecam if running
-        val facecamIntent = Intent(this, FloatingControlService::class.java)
-        stopService(facecamIntent)
 
         // Heavy cleanup in background
         val currentVideoEncoder = videoEncoder

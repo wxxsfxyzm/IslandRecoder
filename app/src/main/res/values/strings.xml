@@ -19,11 +19,11 @@
     <string name="action_record">RECORD</string>
     <string name="action_stop_caps">STOP</string>
     <string name="current_settings">Current Settings</string>
-    <string name="label_quality">Quality</string>
+    <string name="label_quality">Resolution</string>
+    <string name="label_bitrate">Bitrate</string>
+    <string name="label_orientation">Orientation</string>
     <string name="label_frame_rate">Frame Rate</string>
     <string name="label_audio">Audio</string>
-    <string name="label_facecam">Facecam</string>
-    <string name="label_enabled">Enabled</string>
 
     <!-- Content Descriptions -->
     <string name="cd_recordings">Recordings</string>
@@ -32,14 +32,17 @@
 
     <!-- Settings -->
     <string name="settings">Settings</string>
-    <string name="video_quality">Video Quality</string>
-    <string name="frame_rate">Frame Rate</string>
+    <string name="section_recording">Screen Recording</string>
+    <string name="video_quality">Resolution</string>
+    <string name="video_quality_summary">Video width and height in pixels. Higher means sharper</string>
+    <string name="video_bitrate">Video Quality</string>
+    <string name="video_bitrate_summary">Higher quality means better visuals but larger files</string>
+    <string name="screen_orientation">Screen Orientation</string>
+    <string name="screen_orientation_summary">Output video orientation</string>
     <string name="audio_source">Audio Source</string>
-    <string name="section_camera">Camera</string>
-    <string name="enable_facecam">Enable Facecam</string>
-    <string name="section_gestures">Gestures</string>
-    <string name="shake_to_stop">Shake to Stop</string>
-    <string name="shake_sensitivity">Shake Sensitivity</string>
+    <string name="audio_source_summary">Whether to record internal audio or microphone</string>
+    <string name="frame_rate">Frame Rate</string>
+    <string name="frame_rate_summary">Frames per second. Higher means smoother video</string>
 
     <!-- Quality Options -->
     <string name="quality_native">Native</string>
@@ -49,8 +52,28 @@
     <string name="quality_low">360p</string>
     <string name="quality_label_format">%1$s (%2$d×%3$d)</string>
 
+    <!-- Bitrate Options -->
+    <string name="bitrate_auto">Auto</string>
+    <string name="bitrate_1m">1 Mbps</string>
+    <string name="bitrate_4m">4 Mbps</string>
+    <string name="bitrate_6m">6 Mbps</string>
+    <string name="bitrate_8m">8 Mbps</string>
+    <string name="bitrate_16m">16 Mbps</string>
+    <string name="bitrate_24m">24 Mbps</string>
+    <string name="bitrate_32m">32 Mbps</string>
+    <string name="bitrate_50m">50 Mbps</string>
+    <string name="bitrate_100m">100 Mbps</string>
+
+    <!-- Orientation Options -->
+    <string name="orientation_auto">Auto</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="orientation_landscape">Landscape</string>
+
     <!-- Frame Rate Options -->
+    <string name="fps_15">15 FPS</string>
+    <string name="fps_24">24 FPS</string>
     <string name="fps_30">30 FPS</string>
+    <string name="fps_48">48 FPS</string>
     <string name="fps_60">60 FPS</string>
     <string name="fps_90">90 FPS</string>
 
@@ -76,7 +99,6 @@
     <!-- Permissions -->
     <string name="permission_required">Permission Required</string>
     <string name="permission_audio">Microphone permission is required to record audio</string>
-    <string name="permission_camera">Camera permission is required for facecam</string>
     <string name="permission_overlay">Overlay permission is required for floating controls</string>
     <string name="permission_storage">Storage permission is required to save recordings</string>
     <string name="grant_permission">Grant Permission</string>
