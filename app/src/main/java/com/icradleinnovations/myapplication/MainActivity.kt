@@ -19,7 +19,6 @@ import androidx.navigation3.ui.NavDisplay
 import com.flux.recorder.R
 import com.flux.recorder.data.RecordingSettings
 import com.flux.recorder.service.RecorderService
-import com.flux.recorder.service.QuickTileService
 import com.flux.recorder.ui.screens.HomeScreen
 import com.flux.recorder.ui.screens.RecordingsScreen
 import com.flux.recorder.ui.screens.SettingsScreen
@@ -44,11 +43,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // Check if launched from Quick Settings Tile
-        val shouldStartRecording = intent?.action == QuickTileService.ACTION_TOGGLE_RECORDING
-
         setContent {
-            var autoStartRecording by remember { mutableStateOf(shouldStartRecording) }
             val darkMode = isSystemInDarkTheme()
 
             DisposableEffect(darkMode) {
@@ -71,7 +66,6 @@ class MainActivity : ComponentActivity() {
                         fileManager = fileManager,
                         onStartRecording = { resultCode, data, settings ->
                             startRecordingService(resultCode, data, settings)
-                            autoStartRecording = false
                         },
                         onStopRecording = {
                             stopRecordingService()
@@ -87,8 +81,7 @@ class MainActivity : ComponentActivity() {
                         },
                         onShareRecording = { file ->
                             shareRecording(file)
-                        },
-                        autoStartRecording = autoStartRecording
+                        }
                     )
                 }
             }
@@ -182,8 +175,7 @@ fun FluxRecorderApp(
     onPauseRecording: () -> Unit,
     onResumeRecording: () -> Unit,
     onPlayRecording: (File) -> Unit,
-    onShareRecording: (File) -> Unit,
-    autoStartRecording: Boolean = false
+    onShareRecording: (File) -> Unit
 ) {
     var settings by remember { mutableStateOf(preferencesManager.getRecordingSettings()) }
     var recordings by remember { mutableStateOf(fileManager.getAllRecordings()) }
@@ -211,8 +203,7 @@ fun FluxRecorderApp(
                             onNavigateToRecordings = {
                                 recordings = fileManager.getAllRecordings()
                                 backStack.add(Screen.Recordings)
-                            },
-                            autoStartRecording = autoStartRecording
+                            }
                         )
                     }
                     Screen.Settings -> SettingsScreen(

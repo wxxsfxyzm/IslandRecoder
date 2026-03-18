@@ -43,8 +43,7 @@ fun HomeScreen(
     onPauseRecording: () -> Unit,
     onResumeRecording: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToRecordings: () -> Unit,
-    autoStartRecording: Boolean = false
+    onNavigateToRecordings: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -70,19 +69,6 @@ fun HomeScreen(
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             onStartRecording(result.resultCode, result.data!!)
-        }
-    }
-
-    LaunchedEffect(autoStartRecording) {
-        if (autoStartRecording && recordingState is RecordingState.Idle) {
-            if (multiplePermissionsState.allPermissionsGranted) {
-                val intent = (context.getSystemService(android.content.Context.MEDIA_PROJECTION_SERVICE)
-                    as android.media.projection.MediaProjectionManager)
-                    .createScreenCaptureIntent()
-                mediaProjectionLauncher.launch(intent)
-            } else {
-                multiplePermissionsState.launchMultiplePermissionRequest()
-            }
         }
     }
 
