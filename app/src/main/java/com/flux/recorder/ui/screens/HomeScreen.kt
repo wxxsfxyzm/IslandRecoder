@@ -94,7 +94,6 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .systemBarsPadding()
         ) {
             val viewportHeight = maxHeight
             Column(
