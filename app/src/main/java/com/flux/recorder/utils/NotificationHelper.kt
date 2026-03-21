@@ -166,17 +166,17 @@ class NotificationHelper(private val context: Context) {
             put("protocol", 1)
             put("updatable", true)
             put("enableFloat", false)
-            put("business", "screen_recording")
-            put("scene", "recorder")
-            put("content", contentText)
-            put("notifyId", "${context.packageName}$NOTIFICATION_ID")
-            put("islandFirstFloat", false)
             put("ticker", contentText)
             put("tickerPic", "miui.focus.pic_ticker")
             put("tickerPicDark", "miui.focus.pic_ticker")
+            put("notifyId", "${context.packageName}$NOTIFICATION_ID")
+            put("islandFirstFloat", false)
             put("param_island", paramIsland)
-            put("animTextInfo", JSONObject().apply {
+            put("highlightInfo", JSONObject().apply {
                 put("timerInfo", timerInfo)
+                put("content", contentText)
+                put("picFunction", "miui.focus.pic_ticker")
+                put("picFunctionDark", "miui.focus.pic_ticker")
             })
             put("actions", JSONArray().apply {
                 put(JSONObject().apply {
@@ -197,14 +197,9 @@ class NotificationHelper(private val context: Context) {
         }
 
         val focusParam = JSONObject().apply {
-            put("protocol", 1)
-            put("timerWhen", timerWhen)
-            put("timerType", timerType)
-            put("timerSystemCurrent", now)
-            put("updatable", true)
-            put("enableFloat", false)
             put("content", contentText)
             put("scene", "recorder")
+            put("isShowNotification", true)
             put("param_v2", paramV2)
         }
 
