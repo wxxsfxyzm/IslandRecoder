@@ -142,10 +142,8 @@ class NotificationHelper(private val context: Context) {
                 put("imageTextInfoLeft", JSONObject().apply {
                     put("type", 1)
                     put("picInfo", JSONObject().apply {
-                        put("type", 2)
-                        put("pic", "voiceWaveSmall")
-                        put("loop", !isPaused)
-                        put("autoplay", !isPaused)
+                        put("type", 1)
+                        put("pic", "miui.focus.pic_ticker")
                     })
                 })
                 put("sameWidthDigitInfo", JSONObject().apply {
@@ -154,10 +152,8 @@ class NotificationHelper(private val context: Context) {
             })
             put("smallIslandArea", JSONObject().apply {
                 put("picInfo", JSONObject().apply {
-                    put("type", 2)
-                    put("pic", "voiceWaveSmall")
-                    put("loop", !isPaused)
-                    put("autoplay", !isPaused)
+                    put("type", 1)
+                    put("pic", "miui.focus.pic_ticker")
                 })
             })
         }
@@ -175,15 +171,18 @@ class NotificationHelper(private val context: Context) {
             put("content", contentText)
             put("notifyId", "${context.packageName}$NOTIFICATION_ID")
             put("islandFirstFloat", false)
+            put("ticker", contentText)
+            put("tickerPic", "miui.focus.pic_ticker")
+            put("tickerPicDark", "miui.focus.pic_ticker")
             put("param_island", paramIsland)
             put("animTextInfo", JSONObject().apply {
                 put("timerInfo", timerInfo)
                 put("animIconInfo", JSONObject().apply {
                     put("type", 1)
-                    put("src", "voiceWaveBig")
+                    put("src", "miui.focus.pic_ticker")
                     put("number", 0)
-                    put("loop", !isPaused)
-                    put("autoplay", !isPaused)
+                    put("loop", false)
+                    put("autoplay", false)
                 })
             })
             put("actions", JSONArray().apply {
@@ -233,6 +232,8 @@ class NotificationHelper(private val context: Context) {
 
         // Icons bundle: light (for light bg) and dark (for dark bg) variants
         val picsBundle = Bundle().apply {
+            // Ticker icon (camcorder in #FB382F)
+            putParcelable("miui.focus.pic_ticker", Icon.createWithResource(context, R.drawable.ic_focus_ticker))
             // Light mode icons (black, for 焦点通知 light background)
             putParcelable("miui.focus.pic_pause", Icon.createWithResource(context, R.drawable.ic_focus_pause_light))
             putParcelable("miui.focus.pic_resume", Icon.createWithResource(context, R.drawable.ic_focus_resume_light))
