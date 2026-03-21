@@ -177,14 +177,6 @@ class NotificationHelper(private val context: Context) {
             put("param_island", paramIsland)
             put("animTextInfo", JSONObject().apply {
                 put("timerInfo", timerInfo)
-                put("animIconInfo", JSONObject().apply {
-                    put("type", 1)
-                    put("src", "miui.focus.pic_ticker")
-                    put("srcDark", "miui.focus.pic_ticker")
-                    put("number", 0)
-                    put("loop", false)
-                    put("autoplay", false)
-                })
             })
             put("actions", JSONArray().apply {
                 put(JSONObject().apply {
