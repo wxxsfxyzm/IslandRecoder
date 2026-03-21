@@ -128,24 +128,16 @@ class NotificationHelper(private val context: Context) {
             context.getString(R.string.notification_recording_message)
         }
 
-        val titleText = if (isPaused) {
-            context.getString(R.string.status_paused)
-        } else {
-            context.getString(R.string.status_recording)
-        }
-
         val timerInfo = JSONObject().apply {
             put("timerWhen", timerWhen)
             put("timerType", timerType)
             put("timerSystemCurrent", now)
         }
 
-        // 超级岛配置
         val paramIsland = JSONObject().apply {
-            put("islandProperty", 2)
             put("islandPriority", 1)
             put("islandTimeout", 43200)
-            put("needCloseAnimation", true)
+            put("islandProperty", 2)
             put("bigIslandArea", JSONObject().apply {
                 put("imageTextInfoLeft", JSONObject().apply {
                     put("type", 1)
@@ -166,32 +158,32 @@ class NotificationHelper(private val context: Context) {
             })
         }
 
-        // 按钮图标 key
         val action1IconKey = if (isPaused) "miui.focus.pic_resume" else "miui.focus.pic_pause"
         val action1IconDarkKey = if (isPaused) "miui.focus.pic_resume_dark" else "miui.focus.pic_pause_dark"
 
-        // 展开态：highlightInfo 显示计时器 + 图标
-        val highlightInfo = JSONObject().apply {
-            put("picFunction", "miui.focus.pic_ticker")
-            put("picFunctionDark", "miui.focus.pic_ticker")
-            put("timerInfo", timerInfo)
-            put("content", contentText)
-        }
-
-        // param_v2 主体
         val paramV2 = JSONObject().apply {
             put("protocol", 1)
             put("updatable", true)
             put("enableFloat", false)
-            put("ticker", titleText)
+            put("business", "screen_recording")
+            put("scene", "recorder")
+            put("content", contentText)
+            put("notifyId", "${context.packageName}$NOTIFICATION_ID")
+            put("islandFirstFloat", false)
+            put("ticker", contentText)
             put("tickerPic", "miui.focus.pic_ticker")
             put("tickerPicDark", "miui.focus.pic_ticker")
-            put("timeout", 43200)
-            put("showSmallIcon", true)
-            put("islandFirstFloat", false)
-            put("notifyId", "${context.packageName}$NOTIFICATION_ID")
             put("param_island", paramIsland)
-            put("highlightInfo", highlightInfo)
+            put("animTextInfo", JSONObject().apply {
+                put("timerInfo", timerInfo)
+                put("animIconInfo", JSONObject().apply {
+                    put("type", 1)
+                    put("src", "voiceWaveBig")
+                    put("number", 0)
+                    put("loop", !isPaused)
+                    put("autoplay", !isPaused)
+                })
+            })
             put("actions", JSONArray().apply {
                 put(JSONObject().apply {
                     put("actionIntentType", 0)
@@ -210,15 +202,18 @@ class NotificationHelper(private val context: Context) {
             })
         }
 
-        // 顶层结构（匹配 FocusApi.sendFocus 的 param 对象）
         val focusParam = JSONObject().apply {
+            put("protocol", 1)
+            put("timerWhen", timerWhen)
+            put("timerType", timerType)
+            put("timerSystemCurrent", now)
+            put("updatable", true)
+            put("enableFloat", false)
             put("content", contentText)
             put("scene", "recorder")
-            put("isShowNotification", true)
             put("param_v2", paramV2)
         }
 
-        // Notification.Action for PendingIntent
         val pauseResumeAction = Notification.Action.Builder(
             null,
             if (isPaused) context.getString(R.string.action_resume) else context.getString(R.string.action_pause),
@@ -233,15 +228,11 @@ class NotificationHelper(private val context: Context) {
             putParcelable("miui.focus.action_2", stopAction)
         }
 
-        // 图标 Bundle
         val picsBundle = Bundle().apply {
-            // Ticker 图标（#FB382F 录像机）
             putParcelable("miui.focus.pic_ticker", Icon.createWithResource(context, R.drawable.ic_focus_ticker))
-            // 浅色模式按钮（黑色，焦点通知浅色背景）
             putParcelable("miui.focus.pic_pause", Icon.createWithResource(context, R.drawable.ic_focus_pause_light))
             putParcelable("miui.focus.pic_resume", Icon.createWithResource(context, R.drawable.ic_focus_resume_light))
             putParcelable("miui.focus.pic_stop", Icon.createWithResource(context, R.drawable.ic_focus_stop_light))
-            // 深色模式按钮（白色，超级岛深色背景）
             putParcelable("miui.focus.pic_pause_dark", Icon.createWithResource(context, R.drawable.ic_focus_pause))
             putParcelable("miui.focus.pic_resume_dark", Icon.createWithResource(context, R.drawable.ic_focus_resume))
             putParcelable("miui.focus.pic_stop_dark", Icon.createWithResource(context, R.drawable.ic_focus_stop))
