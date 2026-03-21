@@ -158,6 +158,7 @@ class NotificationHelper(private val context: Context) {
             })
         }
 
+        // Determine icon keys based on pause state
         val action1IconKey = if (isPaused) "miui.focus.pic_resume" else "miui.focus.pic_pause"
         val action1IconDarkKey = if (isPaused) "miui.focus.pic_resume_dark" else "miui.focus.pic_pause_dark"
 
@@ -214,6 +215,7 @@ class NotificationHelper(private val context: Context) {
             put("param_v2", paramV2)
         }
 
+        // Notification.Action objects for PendingIntent
         val pauseResumeAction = Notification.Action.Builder(
             null,
             if (isPaused) context.getString(R.string.action_resume) else context.getString(R.string.action_pause),
@@ -228,11 +230,15 @@ class NotificationHelper(private val context: Context) {
             putParcelable("miui.focus.action_2", stopAction)
         }
 
+        // Icons bundle: light (for light bg) and dark (for dark bg) variants
         val picsBundle = Bundle().apply {
+            // Ticker icon (camcorder in #FB382F)
             putParcelable("miui.focus.pic_ticker", Icon.createWithResource(context, R.drawable.ic_focus_ticker))
+            // Light mode icons (black, for 焦点通知 light background)
             putParcelable("miui.focus.pic_pause", Icon.createWithResource(context, R.drawable.ic_focus_pause_light))
             putParcelable("miui.focus.pic_resume", Icon.createWithResource(context, R.drawable.ic_focus_resume_light))
             putParcelable("miui.focus.pic_stop", Icon.createWithResource(context, R.drawable.ic_focus_stop_light))
+            // Dark mode icons (white, for 超级岛 dark background)
             putParcelable("miui.focus.pic_pause_dark", Icon.createWithResource(context, R.drawable.ic_focus_pause))
             putParcelable("miui.focus.pic_resume_dark", Icon.createWithResource(context, R.drawable.ic_focus_resume))
             putParcelable("miui.focus.pic_stop_dark", Icon.createWithResource(context, R.drawable.ic_focus_stop))
