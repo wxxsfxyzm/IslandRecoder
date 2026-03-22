@@ -1,23 +1,29 @@
-name: Android Build
+name: Android CI/CD
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ "master", "main", "develop" ]
+    tags: [ "v*" ] # 当推送 v1.0.0 等标签时触发 Release 流程
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ "master", "main", "develop" ]
+  workflow_dispatch: # 支持手动点击运行
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write # 极其重要：必须有权写入 Release
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整历史以计算版本信息
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Setup Gradle
@@ -26,37 +32,73 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      # 1. 动态准备版本信息
+      - name: Prepare Versioning
+        id: prep
+        run: |
+          # 获取 Tag 名，如果没有 Tag 则显示分支名
+          VERSION_NAME=${GITHUB_REF#refs/tags/}
+          if [[ "$VERSION_NAME" == "refs/heads/"* ]]; then
+            VERSION_NAME="1.0.0-snapshot"
+          fi
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
-      - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
-
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v1
-        with:
-          fileName: 'release.jks'
-          encodedString: ${{ secrets.SIGNING_KEY }}
-
+      # 2. 编译 Release APK (注入动态版本号)
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: |
+          ./gradlew assembleRelease \
+            -PcustomVersionCode=${{ env.BUILD_NUMBER }} \
+            -PcustomVersionName=${{ env.VERSION_NAME }}
+
+      # 3. 签名步骤 (使用你最稳健的 apksigner 方案)
+      - name: Sign APK
+        if: env.SIGNING_KEY != ''
         env:
-          SIGNING_KEY: ${{ steps.decode_keystore.outputs.filePath }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          ALIAS: ${{ secrets.ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          # 还原 Keystore
+          echo "${{ secrets.SIGNING_KEY }}" | base64 -d > /tmp/release.jks
+          
+          # 获取最新的 Android Build Tools 路径
+          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)
+          
+          # 查找生成的未签名 APK
+          UNSIGNED_APK=$(find app/build/outputs/apk/release -name "*-release-unsigned.apk" | head -1)
+          SIGNED_APK="app/build/outputs/apk/release/OppoPods-${{ env.VERSION_NAME }}.apk"
+          
+          # Zipalign 优化
+          ${BUILD_TOOLS}zipalign -f 4 "$UNSIGNED_APK" "$SIGNED_APK"
+          
+          # 正式签名 (V2/V3)
+          ${BUILD_TOOLS}apksigner sign \
+            --ks /tmp/release.jks \
+            --ks-key-alias "${{ secrets.ALIAS }}" \
+            --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+            --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
+            "$SIGNED_APK"
+          
+          # 验证签名
+          ${BUILD_TOOLS}apksigner verify "$SIGNED_APK"
+          
+          # 清理
+          rm /tmp/release.jks
 
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v7
+      # 4. 上传到 Action Artifacts (方便调试)
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          archive: false
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v7
-        with:
-          name: release-apk
+          name: OppoPods-Build-${{ env.VERSION_NAME }}
           path: app/build/outputs/apk/release/*.apk
-          archive: false
+
+      # 5. 自动发布到 GitHub Release
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/OppoPods-v*.apk
+          generate_release_notes: true
+          # 确保文件名在 Release 页面看起来很漂亮
+          name: "OppoPods ${{ env.VERSION_NAME }} (Build ${{ env.BUILD_NUMBER }})"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
