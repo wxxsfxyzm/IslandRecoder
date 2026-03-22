@@ -10,7 +10,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
-import com.island.recorder.MainActivity
+import com.island.recorder.ui.MainActivity
 import com.island.recorder.R
 import com.island.recorder.service.RecorderService
 import org.json.JSONArray

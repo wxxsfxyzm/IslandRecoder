@@ -1,4 +1,4 @@
-package com.flux.recorder.ui.theme
+package com.island.recorder.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
