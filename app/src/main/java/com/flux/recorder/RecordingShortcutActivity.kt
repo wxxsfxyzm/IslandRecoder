@@ -162,8 +162,8 @@ class RecordingShortcutActivity : ComponentActivity() {
 
                                 // Right: buttons stacked vertically
                                 Column(
-                                    modifier = Modifier.width(210.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    modifier = Modifier.width(210.dp).fillMaxHeight(),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
                                 ) {
                                     TextButton(
                                         text = getString(R.string.cancel),
