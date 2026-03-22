@@ -50,6 +50,17 @@ class RecorderService : Service() {
     private var pausedDuration: Long = 0
     private var pauseStartTime: Long = 0
 
+    private var lastHdrState = false
+    private val displayListener = object : android.hardware.display.DisplayManager.DisplayListener {
+        override fun onDisplayAdded(displayId: Int) {}
+        override fun onDisplayRemoved(displayId: Int) {}
+        override fun onDisplayChanged(displayId: Int) {
+            if (displayId == android.view.Display.DEFAULT_DISPLAY) {
+                checkHdrState()
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "RecorderService"
         const val ACTION_START_RECORDING = "com.flux.recorder.START_RECORDING"
@@ -70,6 +81,10 @@ class RecorderService : Service() {
         fileManager = FileManager(this)
         notificationHelper = NotificationHelper(this)
         screenCaptureManager = ScreenCaptureManager(this)
+        
+        val displayManager = getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
+        displayManager.registerDisplayListener(displayListener, null)
+        
         Log.d(TAG, "RecorderService created")
     }
     
@@ -431,17 +446,6 @@ class RecorderService : Service() {
             notificationHelper.updateNotification(notification)
         }
     }
-    
-    private var lastHdrState = false
-    private val displayListener = object : android.hardware.display.DisplayManager.DisplayListener {
-        override fun onDisplayAdded(displayId: Int) {}
-        override fun onDisplayRemoved(displayId: Int) {}
-        override fun onDisplayChanged(displayId: Int) {
-            if (displayId == android.view.Display.DEFAULT_DISPLAY) {
-                checkHdrState()
-            }
-        }
-    }
 
     private fun checkHdrState() {
         val displayManager = getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
@@ -466,13 +470,7 @@ class RecorderService : Service() {
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        val displayManager = getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
-        displayManager.registerDisplayListener(displayListener, null)
-    }
-
-    private fun startRecording() {
+    private fun stopRecording() {
         if (_recordingState.value is RecordingState.Idle) return
         Log.d(TAG, "Stopping recording")
 
