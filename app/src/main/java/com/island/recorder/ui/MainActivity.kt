@@ -11,28 +11,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.content.FileProvider
-import androidx.core.view.WindowCompat
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
-import com.island.recorder.R
 import com.island.recorder.data.RecordingSettings
 import com.island.recorder.service.RecorderService
 import com.island.recorder.ui.screens.HomeScreen
-import com.island.recorder.ui.screens.RecordingsScreen
 import com.island.recorder.ui.screens.SettingsScreen
 import com.island.recorder.ui.theme.IslandRecorderTheme
 import com.island.recorder.utils.FileManager
 import com.island.recorder.utils.PreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,7 +39,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val darkMode = isSystemInDarkTheme()
@@ -77,18 +69,12 @@ class MainActivity : ComponentActivity() {
                     },
                     onResumeRecording = {
                         resumeRecordingService()
-                    },
-                    onPlayRecording = { file ->
-                        playRecording(file)
-                    },
-                    onShareRecording = { file ->
-                        shareRecording(file)
                     }
                 )
             }
         }
     }
-    
+
     private fun startRecordingService(resultCode: Int, data: Intent, settings: RecordingSettings) {
         val intent = Intent(this, RecorderService::class.java).apply {
             action = RecorderService.ACTION_START_RECORDING
@@ -96,63 +82,24 @@ class MainActivity : ComponentActivity() {
             putExtra(RecorderService.EXTRA_RESULT_DATA, data)
             putExtra(RecorderService.EXTRA_SETTINGS, settings)
         }
-        
+
         startService(intent)
     }
-    
+
     private fun stopRecordingService() {
         val intent = Intent(this, RecorderService::class.java).apply {
             action = RecorderService.ACTION_STOP_RECORDING
         }
         startService(intent)
     }
-    
-    private fun playRecording(file: File) {
-        try {
-            val uri = FileProvider.getUriForFile(
-                this,
-                "${packageName}.fileprovider",
-                file
-            )
-            
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "video/mp4")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-    
-    private fun shareRecording(file: File) {
-        try {
-            val uri = FileProvider.getUriForFile(
-                this,
-                "${packageName}.fileprovider",
-                file
-            )
-            
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                type = "video/mp4"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject))
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text))
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            startActivity(Intent.createChooser(intent, getString(R.string.share_chooser_title)))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-    
+
     private fun pauseRecordingService() {
         val intent = Intent(this, RecorderService::class.java).apply {
             action = RecorderService.ACTION_PAUSE_RECORDING
         }
         startService(intent)
     }
-    
+
     private fun resumeRecordingService() {
         val intent = Intent(this, RecorderService::class.java).apply {
             action = RecorderService.ACTION_RESUME_RECORDING
@@ -164,7 +111,6 @@ class MainActivity : ComponentActivity() {
 sealed interface Screen {
     data object Home : Screen
     data object Settings : Screen
-    data object Recordings : Screen
 }
 
 @Composable
@@ -174,12 +120,9 @@ fun FluxRecorderApp(
     onStartRecording: (Int, Intent, RecordingSettings) -> Unit,
     onStopRecording: () -> Unit,
     onPauseRecording: () -> Unit,
-    onResumeRecording: () -> Unit,
-    onPlayRecording: (File) -> Unit,
-    onShareRecording: (File) -> Unit
+    onResumeRecording: () -> Unit
 ) {
     var settings by remember { mutableStateOf(preferencesManager.getRecordingSettings()) }
-    var recordings by remember { mutableStateOf(fileManager.getAllRecordings()) }
 
     val backStack = remember { mutableStateListOf<Screen>(Screen.Home) }
 
@@ -189,7 +132,6 @@ fun FluxRecorderApp(
             NavEntry(key) {
                 when (key) {
                     Screen.Home -> {
-                        // Collect state INSIDE NavEntry so recomposition is triggered here
                         val recordingState by RecorderService.recordingState.collectAsState()
                         HomeScreen(
                             recordingState = recordingState,
@@ -200,11 +142,7 @@ fun FluxRecorderApp(
                             onStopRecording = onStopRecording,
                             onPauseRecording = onPauseRecording,
                             onResumeRecording = onResumeRecording,
-                            onNavigateToSettings = { backStack.add(Screen.Settings) },
-                            onNavigateToRecordings = {
-                                recordings = fileManager.getAllRecordings()
-                                backStack.add(Screen.Recordings)
-                            }
+                            onNavigateToSettings = { backStack.add(Screen.Settings) }
                         )
                     }
                     Screen.Settings -> SettingsScreen(
@@ -214,16 +152,6 @@ fun FluxRecorderApp(
                             preferencesManager.saveRecordingSettings(newSettings)
                         },
                         onNavigateBack = { backStack.removeLastOrNull() }
-                    )
-                    Screen.Recordings -> RecordingsScreen(
-                        recordings = recordings,
-                        onNavigateBack = { backStack.removeLastOrNull() },
-                        onDeleteRecording = { file ->
-                            fileManager.deleteRecording(file)
-                            recordings = fileManager.getAllRecordings()
-                        },
-                        onShareRecording = onShareRecording,
-                        onPlayRecording = onPlayRecording
                     )
                 }
             }

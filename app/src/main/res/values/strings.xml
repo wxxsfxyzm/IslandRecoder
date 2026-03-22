@@ -26,7 +26,6 @@
     <string name="label_audio">Audio</string>
 
     <!-- Content Descriptions -->
-    <string name="cd_recordings">Recordings</string>
     <string name="cd_settings">Settings</string>
     <string name="cd_back">Back</string>
 
@@ -94,19 +93,6 @@
     <string name="audio_internal">Internal Audio</string>
     <string name="audio_microphone">Microphone</string>
     <string name="audio_both">Both</string>
-
-    <!-- Recordings -->
-    <string name="recordings">Recordings</string>
-    <string name="no_recordings">No recordings yet</string>
-    <string name="delete_recording">Delete</string>
-    <string name="share_recording">Share</string>
-    <string name="play_recording">Play</string>
-    <string name="file_size_label">Size: %s</string>
-
-    <!-- Share -->
-    <string name="share_subject">Screen Recording</string>
-    <string name="share_text">Check out this screen recording from Island Recorder</string>
-    <string name="share_chooser_title">Share Recording</string>
 
     <!-- Permissions -->
     <string name="permission_required">Permission Required</string>

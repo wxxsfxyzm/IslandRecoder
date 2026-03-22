@@ -43,8 +43,7 @@ fun HomeScreen(
     onStopRecording: () -> Unit,
     onPauseRecording: () -> Unit,
     onResumeRecording: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToRecordings: () -> Unit
+    onNavigateToSettings: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -80,9 +79,6 @@ fun HomeScreen(
             TopAppBar(
                 title = stringResource(R.string.home_title),
                 actions = {
-                    IconButton(onClick = onNavigateToRecordings) {
-                        Icon(MiuixIcons.Recording, contentDescription = stringResource(R.string.cd_recordings))
-                    }
                     IconButton(
                         onClick = onNavigateToSettings,
                         modifier = Modifier.padding(end = 16.dp)
