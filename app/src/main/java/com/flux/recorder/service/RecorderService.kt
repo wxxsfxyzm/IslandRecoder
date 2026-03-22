@@ -432,7 +432,47 @@ class RecorderService : Service() {
         }
     }
     
-    private fun stopRecording() {
+    private var lastHdrState = false
+    private val displayListener = object : android.hardware.display.DisplayManager.DisplayListener {
+        override fun onDisplayAdded(displayId: Int) {}
+        override fun onDisplayRemoved(displayId: Int) {}
+        override fun onDisplayChanged(displayId: Int) {
+            if (displayId == android.view.Display.DEFAULT_DISPLAY) {
+                checkHdrState()
+            }
+        }
+    }
+
+    private fun checkHdrState() {
+        val displayManager = getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
+        val display = displayManager.getDisplay(android.view.Display.DEFAULT_DISPLAY) ?: return
+
+        // Check if the current display mode or content is HDR
+        // On modern Android, the system toggles HDR mode when HDR content is visible
+        val isHdr = display.hdrCapabilities?.supportedHdrTypes?.isNotEmpty() == true && 
+                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+
+        // Note: In a real scenario, we might want to check more specific flags 
+        // to see if HDR is actually ACTIVE right now.
+        if (isHdr != lastHdrState) {
+            lastHdrState = isHdr
+            if (isHdr) {
+                Log.d(TAG, "Dynamic HDR detected - switching encoder to HLG")
+                videoEncoder?.switchToHdr(isPq = false) // Default to HLG for better compatibility
+            } else {
+                Log.d(TAG, "SDR content detected - switching encoder to SDR")
+                videoEncoder?.switchToSdr()
+            }
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        val displayManager = getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
+        displayManager.registerDisplayListener(displayListener, null)
+    }
+
+    private fun startRecording() {
         if (_recordingState.value is RecordingState.Idle) return
         Log.d(TAG, "Stopping recording")
 
@@ -524,6 +564,9 @@ class RecorderService : Service() {
     
     override fun onDestroy() {
         super.onDestroy()
+        val displayManager = getSystemService(android.content.Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager
+        displayManager.unregisterDisplayListener(displayListener)
+        
         if (_recordingState.value !is RecordingState.Idle) {
             stopRecording()
         }

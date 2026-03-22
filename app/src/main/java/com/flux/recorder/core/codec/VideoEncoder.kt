@@ -53,8 +53,8 @@ class VideoEncoder(
     ) {
         companion object {
             val SDR = HdrConfig(COLOR_STANDARD_BT709, COLOR_TRANSFER_SDR, COLOR_RANGE_LIMITED)
-            val HDR_HLG = HdrConfig(COLOR_STANDARD_BT2020, COLOR_TRANSFER_HLG, COLOR_RANGE_FULL)
-            val HDR_PQ = HdrConfig(COLOR_STANDARD_BT2020, COLOR_TRANSFER_PQ, COLOR_RANGE_FULL)
+            val HDR_HLG = HdrConfig(COLOR_STANDARD_BT2020, COLOR_TRANSFER_HLG, COLOR_RANGE_LIMITED)
+            val HDR_PQ = HdrConfig(COLOR_STANDARD_BT2020, COLOR_TRANSFER_PQ, COLOR_RANGE_LIMITED)
         }
     }
 
@@ -69,20 +69,19 @@ class VideoEncoder(
                 setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)
                 setLong(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000L / frameRate)
 
-                // H.265/HEVC: Use Main10 profile for 10-bit HDR support
+                // H.265/HEVC: Use Main10 profile for 10-bit support
                 if (mimeType == MediaFormat.MIMETYPE_VIDEO_HEVC) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10)
                         
-                        // To record HDR content correctly, we must set the color space parameters BEFORE 
-                        // calling configure() and createInputSurface(). 
-                        // Initializing as HDR HLG ensures the surface can receive 10-bit data.
-                        applyHdrConfig(HdrConfig.HDR_HLG)
-                        isHdrActive = true
-                        Log.d(TAG, "HEVC Main10 profile enabled with HDR HLG color space")
+                        // Default to SDR to avoid oversaturating SDR content. 
+                        // The app can call updateColorSpace() when HDR content is detected.
+                        applyHdrConfig(HdrConfig.SDR)
+                        isHdrActive = false
+                        Log.d(TAG, "HEVC Main10 profile enabled (Starting in SDR mode)")
                     } else {
                         setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.HEVCProfileMain)
-                        Log.d(TAG, "HEVC Main profile enabled (8-bit, API < 29)")
+                        Log.d(TAG, "HEVC Main profile enabled (8-bit)")
                     }
                 }
             }
