@@ -283,7 +283,10 @@ class RecorderService : Service() {
                         if (format != null && !videoTrackAdded) {
                             muxer?.addVideoTrack(format)
                             videoTrackAdded = true
-                            Log.d(TAG, "Video track added to muxer")
+                            Log.d(TAG, "Video track added to muxer, HDR=${videoEncoder?.isHdrActive}")
+                        } else if (format != null && videoTrackAdded) {
+                            // Format changed during recording - HDR state may have changed
+                            Log.d(TAG, "Format changed during recording, HDR=${videoEncoder?.isHdrActive}")
                         }
                     }
                     is VideoEncoder.EncoderOutput.Data -> {
