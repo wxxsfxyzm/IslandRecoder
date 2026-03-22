@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Flux Recorder</string>
+    <string name="app_name">Island Recorder</string>
 
     <!-- Quick Tile -->
     <string name="quick_tile_label">Screen Record</string>
@@ -7,7 +7,7 @@
     <string name="tile_stop_recording">Stop Recording</string>
 
     <!-- Home Screen -->
-    <string name="home_title">Flux Recorder</string>
+    <string name="home_title">Island Recorder</string>
     <string name="status_ready">Ready to Record</string>
     <string name="status_recording">Recording</string>
     <string name="status_paused">Paused</string>
@@ -105,7 +105,7 @@
 
     <!-- Share -->
     <string name="share_subject">Screen Recording</string>
-    <string name="share_text">Check out this screen recording from Flux Recorder</string>
+    <string name="share_text">Check out this screen recording from Island Recorder</string>
     <string name="share_chooser_title">Share Recording</string>
 
     <!-- Permissions -->

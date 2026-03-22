@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.flux.recorder"
+    namespace = "com.island.recorder"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.flux.recorder"
+        applicationId = "com.island.recorder"
         minSdk = 24
         targetSdk = 35
         versionCode = 4
