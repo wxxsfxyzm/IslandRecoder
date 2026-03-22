@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import java.io.File
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 /**
  * Combines video and audio tracks into MP4 container with HDR metadata support
@@ -81,36 +82,42 @@ class MediaMuxerWrapper(private val outputFile: File) {
 
         Log.d(TAG, "Injecting HDR metadata: transfer=$transfer")
 
-        // HDR metadata keys are only available on Android 14+ (API 34)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        // HDR metadata using KEY_HDR_STATIC_INFO (API 24+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             // Mastering display color volume (Rec. ITU-R BT.2020)
             // G(8500, 39850), B(65535, 2300), R(35400, 14600), White(15635, 16450), L(10000000, 50)
-            format.setByteBuffer(MediaFormat.KEY_MASTERING_DISPLAY_COLOR_VOLUME,
-                createMasteringDisplayData(
-                    rX = 35400, rY = 14600,
-                    gX = 8500, gY = 39850,
-                    bX = 65535, bY = 2300,
-                    whiteX = 15635, whiteY = 16450,
-                    maxLum = 10000000, minLum = 50
-                ))
+            val masteringData = createMasteringDisplayData(
+                rX = 35400, rY = 14600,
+                gX = 8500, gY = 39850,
+                bX = 65535, bY = 2300,
+                whiteX = 15635, whiteY = 16450,
+                maxLum = 10000000, minLum = 50
+            )
 
             // Content light level (MaxCLL, MaxFALL)
-            format.setByteBuffer(MediaFormat.KEY_CONTENT_LIGHT_LEVEL,
-                createContentLightLevelData(maxCLL = 1000, maxFALL = 400))
+            val contentLightData = createContentLightLevelData(maxCLL = 1000, maxFALL = 400)
 
-            // HDR static metadata (Max Display Mastering Luminance)
-            format.setInteger(MediaFormat.KEY_HDR_STATIC_INFO_BYTES, 1)
+            // Combine descriptors into one ByteBuffer
+            val staticInfo = ByteBuffer.allocate(masteringData.limit() + contentLightData.limit())
+            staticInfo.order(ByteOrder.LITTLE_ENDIAN)
+            staticInfo.put(masteringData)
+            staticInfo.put(contentLightData)
+            staticInfo.flip()
+
+            format.setByteBuffer(MediaFormat.KEY_HDR_STATIC_INFO, staticInfo)
         }
     }
 
     /**
-     * Create mastering display color volume data (16 bytes)
+     * Create mastering display color volume data (25 bytes: 1 byte ID + 24 bytes data)
      */
     private fun createMasteringDisplayData(
         rX: Int, rY: Int, gX: Int, gY: Int, bX: Int, bY: Int,
         whiteX: Int, whiteY: Int, maxLum: Int, minLum: Int
     ): ByteBuffer {
-        val data = ByteBuffer.allocate(24)
+        val data = ByteBuffer.allocate(25)
+        data.order(ByteOrder.LITTLE_ENDIAN)
+        data.put(0.toByte()) // Descriptor ID 0 (Mastering Display Color Volume)
         data.putShort(gX.toShort()); data.putShort(gY.toShort())
         data.putShort(bX.toShort()); data.putShort(bY.toShort())
         data.putShort(rX.toShort()); data.putShort(rY.toShort())
@@ -122,10 +129,12 @@ class MediaMuxerWrapper(private val outputFile: File) {
     }
 
     /**
-     * Create content light level data (4 bytes)
+     * Create content light level data (5 bytes: 1 byte ID + 4 bytes data)
      */
     private fun createContentLightLevelData(maxCLL: Int, maxFALL: Int): ByteBuffer {
-        val data = ByteBuffer.allocate(4)
+        val data = ByteBuffer.allocate(5)
+        data.order(ByteOrder.LITTLE_ENDIAN)
+        data.put(1.toByte()) // Descriptor ID 1 (Content Light Level)
         data.putShort(maxCLL.toShort())
         data.putShort(maxFALL.toShort())
         data.flip()
