@@ -193,9 +193,7 @@ fun SettingsScreen(
                     onCheckedChange = {
                         currentSettings = currentSettings.copy(showTouches = it)
                         onSettingsChanged(currentSettings)
-                        if (isRooted) {
-                            RootUtils.setShowTouches(it)
-                        }
+                        // Touch visualization will be enabled/disabled during recording
                     }
                 )
             }

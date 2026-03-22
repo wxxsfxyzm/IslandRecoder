@@ -120,6 +120,12 @@ class RecorderService : Service() {
         // Show processing state immediately for responsive UI
         _recordingState.value = RecordingState.Processing(0)
 
+        // Enable touch visualization for recording if enabled in settings
+        if (settings.showTouches && RootUtils.isRooted()) {
+            RootUtils.setShowTouches(true)
+            Log.d(TAG, "Touch visualization enabled for recording")
+        }
+
         try {
             // Start foreground service (must happen on main thread)
             val notification = notificationHelper.createRecordingNotification(0L)
@@ -504,6 +510,10 @@ class RecorderService : Service() {
             }
 
             screenCaptureManager.stop()
+
+            // Disable touch visualization after recording stops
+            RootUtils.setShowTouches(false)
+            Log.d(TAG, "Touch visualization disabled after recording")
 
             // Make sure file is visible in gallery
             currentOutputFile?.let { file ->
