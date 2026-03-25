@@ -70,7 +70,35 @@ class QuickTileService : TileService() {
         qsTile?.apply {
             state = if (isRecording) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             label = if (isRecording) getString(R.string.tile_stop_recording) else getString(R.string.tile_start_recording)
-            icon = Icon.createWithResource(this@QuickTileService, iconRes)
+            
+            // Create scaled icon for tile (250% larger for app icon style)
+            val icon = if (tileStyle == TileStyle.APP_ICON) {
+                val drawable = androidx.core.content.ContextCompat.getDrawable(this@QuickTileService, iconRes)
+                if (drawable != null) {
+                    val bitmap = android.graphics.Bitmap.createBitmap(
+                        drawable.intrinsicWidth,
+                        drawable.intrinsicHeight,
+                        android.graphics.Bitmap.Config.ARGB_8888
+                    )
+                    val canvas = android.graphics.Canvas(bitmap)
+                    drawable.setBounds(0, 0, canvas.width, canvas.height)
+                    drawable.draw(canvas)
+                    
+                    // Scale to 250%
+                    val scaledBitmap = android.graphics.Bitmap.createScaledBitmap(
+                        bitmap,
+                        (bitmap.width * 2.5f).toInt(),
+                        (bitmap.height * 2.5f).toInt(),
+                        true
+                    )
+                    Icon.createWithBitmap(scaledBitmap)
+                } else {
+                    Icon.createWithResource(this@QuickTileService, iconRes)
+                }
+            } else {
+                Icon.createWithResource(this@QuickTileService, iconRes)
+            }
+            
             updateTile()
         }
     }
