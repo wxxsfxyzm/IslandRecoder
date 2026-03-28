@@ -95,7 +95,7 @@
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:multiprocess="false" />
 
     </application>
