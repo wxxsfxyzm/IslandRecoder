@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -102,7 +103,7 @@ fun HomeScreen(
                     .overScrollVertical()
                     .verticalScroll(rememberScrollState())
                     .defaultMinSize(minHeight = viewportHeight)
-                    .padding(padding) // Move padding here so column content respects insets
+                    .padding(padding)
                     .padding(horizontal = 24.dp, vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -110,11 +111,7 @@ fun HomeScreen(
             // Recording status
             when (recordingState) {
                 is RecordingState.Idle -> {
-                    Text(
-                        stringResource(R.string.status_ready),
-                        style = MiuixTheme.textStyles.title2,
-                        color = MiuixTheme.colorScheme.onBackgroundVariant
-                    )
+                    // Removed 'Ready to Record' text as requested
                 }
                 is RecordingState.Recording -> {
                     Text(
@@ -177,7 +174,7 @@ fun HomeScreen(
 
             // Record button
             RecordButton(
-                isRecording = recordingState is RecordingState.Recording,
+                isRecording = recordingState is RecordingState.Recording || recordingState is RecordingState.Paused,
                 onClick = {
                     if (recordingState is RecordingState.Idle) {
                         if (multiplePermissionsState.allPermissionsGranted) {
@@ -194,36 +191,23 @@ fun HomeScreen(
                 }
             )
 
-            // Pause/Resume buttons when recording
+            // Pause/Resume button when recording (Stop button removed as requested)
             if (recordingState is RecordingState.Recording || recordingState is RecordingState.Paused) {
                 Spacer(modifier = Modifier.height(24.dp))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            if (recordingState is RecordingState.Recording) {
-                                onPauseRecording()
-                            } else {
-                                onResumeRecording()
-                            }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (recordingState is RecordingState.Recording) {
+                            onPauseRecording()
+                        } else {
+                            onResumeRecording()
                         }
-                    ) {
-                        Text(
-                            text = if (recordingState is RecordingState.Recording) stringResource(R.string.action_pause) else stringResource(R.string.action_resume),
-                            fontWeight = FontWeight.Bold
-                        )
                     }
-
-                    Button(
-                        onClick = onStopRecording,
-                        colors = ButtonDefaults.buttonColors(color = RecordingRed)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.action_stop),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                ) {
+                    Text(
+                        text = if (recordingState is RecordingState.Recording) stringResource(R.string.action_pause) else stringResource(R.string.action_resume),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
@@ -263,13 +247,15 @@ fun RecordButton(
                 .scale(if (isRecording) scale else 1f),
             cornerRadius = 90.dp,
             colors = ButtonDefaults.buttonColors(
-                color = if (isRecording) RecordingRed else MiuixTheme.colorScheme.primary
+                color = if (isRecording) RecordingRed else MiuixTheme.colorScheme.primary,
+                contentColor = Color.White
             )
         ) {
             Text(
                 if (isRecording) stringResource(R.string.action_stop_caps) else stringResource(R.string.action_record),
                 style = MiuixTheme.textStyles.title2,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         }
     }
