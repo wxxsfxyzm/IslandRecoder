@@ -32,6 +32,9 @@
     <!-- Settings -->
     <string name="settings">Settings</string>
     <string name="section_recording">Screen Recording</string>
+    <string name="grant_project_media">Grant Screen Recording Permission</string>
+    <string name="grant_project_media_summary">Automatically bypass the system recording permission dialog (Requires Root/Shizuku)</string>
+    <string name="project_media_already_granted">Permission already granted</string>
     <string name="video_quality">Resolution</string>
     <string name="video_quality_summary">Video width and height in pixels. Higher means sharper</string>
     <string name="video_bitrate">Video Quality</string>

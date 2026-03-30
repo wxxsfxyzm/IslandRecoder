@@ -33,6 +33,9 @@
     <!-- Settings -->
     <string name="settings">设置</string>
     <string name="section_recording">屏幕录制</string>
+    <string name="grant_project_media">授予录屏权限</string>
+    <string name="grant_project_media_summary">自动绕过系统录屏授权弹窗 (需要 Root/Shizuku)</string>
+    <string name="project_media_already_granted">权限已授予</string>
     <string name="video_quality">分辨率</string>
     <string name="video_quality_summary">视频的宽、高像素数，越高视频越清晰</string>
     <string name="video_bitrate">视频画质</string>

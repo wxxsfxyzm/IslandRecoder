@@ -103,10 +103,51 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(vertical = 12.dp)
         ) {
+            val context = LocalContext.current
+            var isProjectMediaGranted by remember { mutableStateOf(false) }
+            val isRooted = remember { RootUtils.isRooted() }
+            val isShizukuAvailable = remember { ShizukuHelper.isAvailable() }
+
+            LaunchedEffect(Unit) {
+                // Check if already granted
+                val result = if (isRooted) {
+                    RootUtils.getAppOp(context.packageName, "PROJECT_MEDIA")
+                } else {
+                    "" // Shizuku checking stdout is complex, will rely on user click for now or assume not granted
+                }
+                if (result.contains("allow")) {
+                    isProjectMediaGranted = true
+                }
+            }
+
             SmallTitle(text = stringResource(R.string.section_recording))
             Card(
                 modifier = Modifier.padding(horizontal = 12.dp)
             ) {
+                // Grant PROJECT_MEDIA
+                SuperSwitch(
+                    title = stringResource(R.string.grant_project_media),
+                    summary = if (isProjectMediaGranted) 
+                        stringResource(R.string.project_media_already_granted)
+                    else 
+                        stringResource(R.string.grant_project_media_summary),
+                    checked = isProjectMediaGranted,
+                    enabled = !isProjectMediaGranted && (isRooted || isShizukuAvailable),
+                    onCheckedChange = {
+                        if (it) {
+                            val cmd = "appops set ${context.packageName} PROJECT_MEDIA allow"
+                            val success = if (isRooted) {
+                                RootUtils.setAppOp(context.packageName, "PROJECT_MEDIA", "allow")
+                            } else if (isShizukuAvailable) {
+                                ShizukuHelper.execShell(cmd) == 0
+                            } else {
+                                false
+                            }
+                            if (success) isProjectMediaGranted = true
+                        }
+                    }
+                )
+
                 // Resolution
                 val qualityItems = VideoQuality.entries.map { quality ->
                     val (w, h) = quality.computeDimensions(screenW, screenH)

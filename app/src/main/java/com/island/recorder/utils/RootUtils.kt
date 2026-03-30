@@ -43,4 +43,35 @@ object RootUtils {
             false
         }
     }
+
+    fun setAppOp(packageName: String, op: String, mode: String): Boolean {
+        return try {
+            val process = Runtime.getRuntime().exec("su")
+            val os = DataOutputStream(process.outputStream)
+            os.writeBytes("appops set $packageName $op $mode\n")
+            os.writeBytes("exit\n")
+            os.flush()
+            process.waitFor()
+            process.exitValue() == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set appop via root", e)
+            false
+        }
+    }
+
+    fun getAppOp(packageName: String, op: String): String {
+        return try {
+            val process = Runtime.getRuntime().exec("su")
+            val os = DataOutputStream(process.outputStream)
+            os.writeBytes("appops get $packageName $op\n")
+            os.writeBytes("exit\n")
+            os.flush()
+            val output = process.inputStream.bufferedReader().readText()
+            process.waitFor()
+            output
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get appop via root", e)
+            ""
+        }
+    }
 }
