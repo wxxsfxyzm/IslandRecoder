@@ -120,7 +120,7 @@ fun SettingsScreen(
                 }
             }
 
-            SmallTitle(text = stringResource(R.string.section_recording))
+            SmallTitle(text = stringResource(R.string.section_status))
             Card(
                 modifier = Modifier.padding(horizontal = 12.dp)
             ) {
@@ -147,7 +147,14 @@ fun SettingsScreen(
                         }
                     }
                 )
+            }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            SmallTitle(text = stringResource(R.string.section_recording))
+            Card(
+                modifier = Modifier.padding(horizontal = 12.dp)
+            ) {
                 // Resolution
                 val qualityItems = VideoQuality.entries.map { quality ->
                     val (w, h) = quality.computeDimensions(screenW, screenH)

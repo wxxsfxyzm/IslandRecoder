@@ -31,8 +31,9 @@
 
     <!-- Settings -->
     <string name="settings">Settings</string>
+    <string name="section_status">Status</string>
     <string name="section_recording">Screen Recording</string>
-    <string name="grant_project_media">Grant Screen Recording Permission</string>
+    <string name="grant_project_media">Grant Project Media Permission</string>
     <string name="grant_project_media_summary">Automatically bypass the system recording permission dialog (Requires Root/Shizuku)</string>
     <string name="project_media_already_granted">Permission already granted</string>
     <string name="video_quality">Resolution</string>
@@ -49,7 +50,7 @@
     <string name="video_codec_summary">H.265 supports HDR and is more efficient</string>
     <string name="show_touches">Show Screen Touches</string>
     <string name="show_touches_summary">Show a white dot where fingers touch (Root Required)</string>
-    <string name="bypass_focus_island">Bypass Xiaomi Focus Island Whitelist</string>
+    <string name="bypass_focus_island">Bypass Xiaomi Focus Island Whitelist (Unavailable)</string>
     <string name="bypass_focus_island_summary">Temporarily disconnect XMSF network when sending notifications to bypass system whitelist (Requires Shizuku)\nStatus: %1$s</string>
     <string name="shizuku_status_authorized">Authorized</string>
     <string name="shizuku_status_not_authorized">Not Authorized</string>

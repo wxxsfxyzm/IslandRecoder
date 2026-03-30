@@ -32,8 +32,9 @@
 
     <!-- Settings -->
     <string name="settings">设置</string>
+    <string name="section_status">状态</string>
     <string name="section_recording">屏幕录制</string>
-    <string name="grant_project_media">授予录屏权限</string>
+    <string name="grant_project_media">授予投影媒体权限</string>
     <string name="grant_project_media_summary">自动绕过系统录屏授权弹窗 (需要 Root/Shizuku)</string>
     <string name="project_media_already_granted">权限已授予</string>
     <string name="video_quality">分辨率</string>
@@ -50,7 +51,7 @@
     <string name="video_codec_summary">H.265 支持 HDR 且更高效</string>
     <string name="show_touches">显示屏幕触摸</string>
     <string name="show_touches_summary">手指点击的地方显示小白点 (需要 Root)</string>
-    <string name="bypass_focus_island">绕过小米超级岛白名单</string>
+    <string name="bypass_focus_island">绕过小米超级岛白名单 (不可用)</string>
     <string name="bypass_focus_island_summary">发送通知时临时断开 XMSF 网络以绕过系统白名单限制 (需要 Shizuku)\n状态: %1$s</string>
     <string name="shizuku_status_authorized">已授权</string>
     <string name="shizuku_status_not_authorized">未授权</string>
